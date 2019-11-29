@@ -68,7 +68,7 @@ class docOcrTaskHandler(baseHandler):
         }
 
         params['sign'] = self._sign._sign(params)
-        url = 'http://127.0.0.1:8089/ghk_oci/v1/docType'
+        url = 'http://127.0.0.1:8089/v1/docType'
 
         headers = {'content-type': "application/json"}
         response = requests.post(url, data=json.dumps(params), headers=headers)

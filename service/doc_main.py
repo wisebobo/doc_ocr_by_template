@@ -200,7 +200,7 @@ class doc_main(object):
                 jd_rslt = {}
                 jd_rslt['valid_score'] = 0
                 jd_rslt['vendor'] = 'JD'
-                logging.error('Error timeout when running JD OCR : ' + str(e))
+                logging.error('Error when running JD OCR : ' + str(e))
                 __pool.terminate()
 
             try:

@@ -107,7 +107,7 @@ def captureFace(image):
         if len(face_locations) > 0:
             face_locations = sorted(face_locations, key=itemgetter(2,), reverse=True)
             (x, y, width, height) = face_locations[0]
-            logging.warn(face_locations)
+
             top = int(y - 50)
             right = int(x + width * 1.1)
             bottom = int(y + height * 1.1)
