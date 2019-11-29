@@ -1,0 +1,17 @@
+{
+	"epochs": 20,
+	"initial_epoch": 0,
+	"batch_size": 128,
+	"num_classes": 23,
+	/* Model Name:
+	VGG16, VGG19, InceptionV3, Xception, MobileNet, DenseNet,
+	ResNet18, ResNet34, ResNet50, ResNet101, ResNet152, AlexNet, LeNet, ZF_Net, mnist_net, VGG16_TSL
+	*/
+	"model_name": "MobileNet",
+	"lr": 0.0005,
+	"image_height": 140,
+	"image_width": 220,
+	"monitor": "val_loss",
+	"lr_reduce_patience": 5,
+	"early_stop_patience": 10
+}

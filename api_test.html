@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Document OCR Demo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<style>
+  img{
+    max-width: 100%
+  }
+  body{
+    position: absolute;
+    height: 100%;
+    margin: 0;
+    width: 100%;
+  }
+  .main{
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background-color: #fff;
+    display: flex;
+  }
+  .right{
+    flex: 1;
+    padding: 10px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: left;
+    height: 100%;
+    overflow: auto;
+  }
+  .allAreaInfo_wrap{
+    width: 350px;
+    overflow: auto;
+    background-color: #f8f8f8;
+    margin: 0px 0 0px 0px;
+    /*padding: 15px 10px;*/
+  }
+  .allAreaInfo_wrap >div>div{
+    width: 260px;
+    background-color: #fff;
+    margin: 0 auto 20px auto;
+    font-size: 13px;
+    padding: 10px;
+    border: 2px solid #fff;
+    text-align: right;
+    border-radius: 4px;
+  }
+  .allAreaInfo_wrap p{
+    margin: 0 0 6px 0;
+    text-align: left;
+    position: relative;
+  }
+  .allAreaInfo_wrap .active{
+    border: 2px solid #A05EB5;
+  }
+  .areaInfo{
+    border-top: 1px solid #ccc;
+    border-bottom: 1px solid #ccc;
+    margin: 30px 0;
+  }
+  .areaInfo p{
+    font-size: 14px;
+  }
+  .areaInfo input[type="text"]{
+    width: 300px;
+  }
+  .wrap{
+    position: relative;
+    margin-bottom: 20px;
+  }
+  .wrap img{
+    vertical-align: top;
+    width: 600px;
+  }
+  .range{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    /*background: red;*/
+  }
+  .range .block{
+    position: absolute;
+    top:0;
+    left: 0;
+    width: 0;
+    height: 0;
+    background-color: rgba(135,206,255,.7);
+  }
+  .block.active{
+    background-color: rgba(255,192,203,.7);
+  }
+  .block:hover{
+    cursor: pointer;
+  }
+  .size{
+    position: absolute;
+    bottom: 0;
+    right:0;
+    width: 20px;
+    height: 20px;
+  }
+  .size:hover{
+    cursor: se-resize;
+  }
+
+  .result{
+    position: relative;
+    width: 400px;
+
+  }
+  .result_range{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+  .result_block{
+    position: absolute;
+    background-color: rgba(255,140,0,.5);
+  }
+  .tab_header{
+    position: fixed;
+    width: 350px;
+    display: flex;
+    background-color: #fff;
+    z-index: 9;
+  }
+  .tab_header span{
+    flex: 1;
+    padding: 20px 0;
+    text-align: center;
+    border-bottom: 2px solid #fff;
+    cursor: pointer;
+  }
+  .tab_header span.show{
+    border-bottom: 2px solid #3DA7B0;
+    color: #3DA7B0;
+  }
+  .tab{
+    padding-top: 80px;
+    overflow: auto;
+  }
+  .addBtn_wrap{
+    padding: 10px 0;
+    display: flex;
+  }
+  .addBtn_wrap .btn{
+    position: relative;
+    padding: 0 10px;
+    min-height: 30px;
+    line-height: 30px;
+    border: 1px solid #16C4AF;
+    display: inline-block;
+    font-size: 14px;
+    margin-right: 15px;
+    border-radius: 4px;
+    text-align: center;
+    cursor: pointer;
+    display: block;
+    margin-bottom: 20px;
+  }
+  .addBtn_wrap input[type="file"]{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    z-index: 2;
+    cursor: pointer;
+  }
+  .addBtn_wrap .btn img{
+    width: 30px;
+    float: left;
+    margin-right: 5px;
+  }
+  .wrap_left .label{
+    display: inline-block;
+    width: 60px;
+    text-align: left;
+  }
+  .wrap_left input{
+    background: #fff;
+    padding: 4px;
+    outline: none;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  .wrap_left input:focus{
+    border-color: #16C4AF;
+  }
+  #viewResult img{
+    width: 22px;
+    position: relative;
+    top: 4px;
+  }
+  #addRangeBlock img{
+    width: 20px;
+    position: relative;
+    top: 5px;
+  }
+  .resultString{
+    padding: 10px 0 30px 0;
+    text-align: left;
+    font-size: 13px;
+  }
+  #setData-wrap img{
+    float: right;
+    margin-left: 10px;
+    width: 20px;
+    position: relative;
+    top: 5px;
+  }
+
+  .left{
+    width: 400px;
+    border: 1px solid #ccc;
+    padding: 20px;
+    overflow: auto;
+    margin: 16px;
+  }
+  .left>div{
+    font-size: 14px;
+    word-break: break-all;
+  }
+  .left h6{
+    margin: 0 0 20px 0;
+    font-size: 16px;
+    color: #16C4AF;
+  }
+  .loading{
+    display: none;
+    text-align: center;
+  }
+  .left .key{
+    color: #16C4AF;
+    padding-right: 10px;
+  }
+  .left #result>p{
+    display: flex;
+  }
+</style>
+<body>
+  <div class="main">
+    <div class="right">
+        <div class="addBtn_wrap">
+            <div class="wrap_left">
+              <div class="btn">
+                <p>
+                  <span class="label">URL: </span>
+                  <input id="URL" type="text" name="" placeholder="URL" value="http://127.0.0.1:8089/v1/doc">
+                </p>
+                <p>
+                  <span class="label">api_id: </span>
+                  <input id="api_id" type="text" name="" placeholder="api_id" value="demo_id">
+                </p>
+                <p>
+                  <span class="label">api_key: </span>
+                  <input id="api_key" type="text" name="" placeholder="api_key" value="demo_secret">
+                </p>
+              </div>
+            </div>
+            <div class="wrap_right">
+              <div class="btn">
+               <!--  <img src="picture.png"/> -->
+                <span>Select Picture</span>
+                <input id="selectImage" type="file" name="selectImage" />
+              </div>
+
+              <div class="btn" id="viewResult">
+                <!-- <img src="confirm.png"/> -->
+                <span>View Result</span>
+              </div>
+            </div>
+
+        </div>
+        <div class="wrap">
+            <img id="previewImage" src="">
+        </div>
+
+    </div>
+    <div class="left">
+      <h6>OCR Result</h6>
+      <div class="loading" id="loading">
+        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="80px" height="80px" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid">
+          <g transform="rotate(22.1589 50 50)">
+            <animateTransform attributeName="transform" type="rotate" values="360 50 50;0 50 50" keyTimes="0;1" dur="1s" repeatCount="indefinite" calcMode="spline" keySplines="0.5 0 0.5 1" begin="-0.1s"></animateTransform>
+            <circle cx="50" cy="50" r="39.891" stroke="#ffc254" stroke-width="14.4" fill="none" stroke-dasharray="0 300">
+              <animate attributeName="stroke-dasharray" values="15 300;55.1413599195142 300;15 300" keyTimes="0;0.5;1" dur="1s" repeatCount="indefinite" calcMode="linear" keySplines="0 0.4 0.6 1;0.4 0 1 0.6" begin="-0.046s"></animate>
+            </circle>
+            <circle cx="50" cy="50" r="39.891" stroke="#fff1cf" stroke-width="7.2" fill="none" stroke-dasharray="0 300">
+              <animate attributeName="stroke-dasharray" values="15 300;55.1413599195142 300;15 300" keyTimes="0;0.5;1" dur="1s" repeatCount="indefinite" calcMode="linear" keySplines="0 0.4 0.6 1;0.4 0 1 0.6" begin="-0.046s"></animate>
+            </circle>
+            <circle cx="50" cy="50" r="32.771" stroke="#000000" stroke-width="1" fill="none" stroke-dasharray="0 300">
+              <animate attributeName="stroke-dasharray" values="15 300;45.299378454348094 300;15 300" keyTimes="0;0.5;1" dur="1s" repeatCount="indefinite" calcMode="linear" keySplines="0 0.4 0.6 1;0.4 0 1 0.6" begin="-0.046s"></animate>
+            </circle>
+            <circle cx="50" cy="50" r="47.171" stroke="#000000" stroke-width="1" fill="none" stroke-dasharray="0 300">
+              <animate attributeName="stroke-dasharray" values="15 300;66.03388996804073 300;15 300" keyTimes="0;0.5;1" dur="1s" repeatCount="indefinite" calcMode="linear" keySplines="0 0.4 0.6 1;0.4 0 1 0.6" begin="-0.046s"></animate>
+            </circle>
+          </g>
+          <g transform="rotate(56.0222 50 50)">
+            <animateTransform attributeName="transform" type="rotate" values="360 50 50;0 50 50" keyTimes="0;1" dur="1s" repeatCount="indefinite" calcMode="spline" keySplines="0.5 0 0.5 1"></animateTransform>
+
+            <path fill="#ffc254" stroke="#000000" d="M97.2,50c0,6.1-1.2,12.2-3.5,17.8l-13.3-5.4c1.6-3.9,2.4-8.2,2.4-12.4"></path>
+            <path fill="#fff1cf" transform="translate(0,-0.1)" d="M93.6,50c0,1.2,0,2.4-0.1,3.6L93,57.2c-0.4,2-2.3,3.3-4.2,2.8l-0.2-0.1c-1.8-0.5-3.1-2.3-2.7-3.9l0.4-3 c0.1-1,0.1-2,0.1-3"></path>
+            <path fill="#ffc254" stroke="#000000" d="M85.4,62.5c-0.2,0.7-0.5,1.4-0.8,2.1c-0.3,0.7-0.6,1.4-0.9,2c-0.6,1.1-2,1.4-3.2,0.8v0c-1.1-0.7-1.7-2-1.2-2.9 c0.3-0.6,0.5-1.2,0.8-1.8c0.2-0.6,0.6-1.2,0.7-1.8"></path>
+            <path fill="#ffc254" stroke="#000000" d="M94.5,65.7c-0.3,0.9-0.7,1.7-1,2.6c-0.4,0.8-0.7,1.7-1.1,2.5c-0.7,1.4-2.3,1.9-3.4,1.3l0,0 c-1.1-0.7-1.5-2.2-0.9-3.4c0.4-0.8,0.7-1.5,1-2.3c0.3-0.8,0.7-1.5,0.9-2.3"></path>
+            <path fill="#ffc254" stroke="#000000" d="M85.6,67c0,0.8,0.1,1.6,0.3,2.4c0.6-0.5,1.1-1,1.4-1.7c0.2-0.7,0.2-1.5-0.1-2.2C86.5,64,85.6,66.3,85.6,67z"></path>
+
+          </g>
+          <g transform="rotate(22.1589 50 50)">
+            <animateTransform attributeName="transform" type="rotate" values="360 50 50;0 50 50" keyTimes="0;1" dur="1s" repeatCount="indefinite" calcMode="spline" keySplines="0.5 0 0.5 1" begin="-0.1s"></animateTransform>
+
+            <path fill="#fff1cf" stroke="#000000" d="M91,33.6l-10,4c-0.4-1.2-1.1-2.4-1.7-3.5c-0.2-0.5,0.3-1.1,0.9-1C83.6,32.9,87.4,32.9,91,33.6z"></path>
+            <path fill="#fff1cf" stroke="#000000" d="M83.2,36.7l10-4c-0.6-1.7-1.5-3.3-2.3-4.9c-0.3-0.7-1.2-0.6-1.4,0.1C87.6,31.1,85.7,34,83.2,36.7z"></path>
+            <path fill="#ffc254" stroke="#000000" transform="translate(0,0.2)" d="M82.8,50c0-3.4-0.5-6.8-1.5-10c-0.2-0.8-0.4-1.5-0.3-2.3c0.1-0.8,0.4-1.6,0.7-2.4c0.7-1.5,1.9-3.1,3.7-4l0,0 c1.8-0.9,3.7-1,5.6-0.3c0.9,0.4,1.7,1,2.4,1.8c0.7,0.8,1.3,1.7,1.7,2.8c1.5,4.6,2.2,9.5,2.2,14.4"></path>
+            <path fill="#fff1cf" transform="translate(0,0.3)" d="M86.4,50l0-0.9l-0.1-0.9l-0.1-1.9c0-0.9,0.2-1.7,0.7-2.3c0.5-0.7,1.3-1.2,2.3-1.4l0.3,0c0.9-0.2,1.9,0,2.6,0.6 c0.7,0.5,1.3,1.4,1.4,2.4l0.2,2.2l0.1,1.1l0,1.1"></path>
+            <path fill="#000000" d="M88.6,36.6c0.1,0.3-0.2,0.7-0.6,0.8c-0.5,0.2-0.9,0-1.1-0.3c-0.1-0.3,0.2-0.7,0.6-0.8C88,36.1,88.5,36.2,88.6,36.6z"></path>
+            <path fill="none" stroke="#000000" d="M86,38.7c0.2,0.6,0.8,0.9,1.4,0.7c0.6-0.2,0.9-0.9,0.6-2.1c0.3,1.2,1,1.7,1.6,1.5c0.6-0.2,0.9-0.8,0.8-1.4"></path>
+            <path fill="#ffc254" stroke="#000000" d="M86.8,42.2l0.4,2.2c0.1,0.4,0.1,0.7,0.2,1.1l0.1,1.1c0.1,1.2-0.9,2.3-2.2,2.3h0c-1.3,0-2.5-0.8-2.5-1.9l-0.1-1 c0-0.3-0.1-0.6-0.2-1l-0.3-1.9"></path>
+            <path fill="#ffc254" stroke="#000000" d="M96.2,40.2l0.5,2.7c0.1,0.5,0.2,0.9,0.2,1.4l0.1,1.4c0.1,1.5-0.9,2.8-2.2,2.8c-1.3,0-2.5-1.1-2.6-2.4l-0.1-1.2 c0-0.4-0.1-0.8-0.2-1.2l-0.4-2.5"></path>
+            <path fill="none" stroke="#000000" d="M90.9,36.4c1.1-1.1,2.7-1.6,4.3-1.9"></path>
+            <path fill="none" stroke="#000000" d="M91.6,37.5c1.3-0.5,2.8-0.8,4.2-0.7"></path>
+            <path fill="none" stroke="#000000" d="M91.7,38.8c0.2-0.1,0.4-0.1,0.7-0.1c1.2-0.1,2.5,0,3.8,0.3"></path>
+            <path fill="none" stroke="#000000" d="M85,38.4c-1.6-0.1-3.1,0.6-4.6,1.2"></path>
+            <path fill="none" stroke="#000000" d="M85,39.5c-1.4,0.3-2.8,0.9-4,1.6"></path>
+            <path fill="none" stroke="#000000" d="M85.5,40.4c-0.2,0-0.4,0.1-0.7,0.2c-1.1,0.5-2.2,1.1-3.2,1.8"></path>
+            <path fill="#ff7bac" d="M92.8,34.2c0.1,0.3-0.3,0.8-0.9,1c-0.6,0.2-1.2,0.1-1.4-0.2c-0.1-0.3,0.3-0.8,0.9-1 C92.1,33.8,92.7,33.9,92.8,34.2z"></path>
+            <path fill="#ff7bac" d="M82.2,38.2c0.1,0.3,0.7,0.3,1.3,0.1c0.6-0.2,1-0.6,0.9-0.9c-0.1-0.3-0.7-0.3-1.3-0.1 C82.5,37.5,82,37.9,82.2,38.2z"></path>
+            <path fill="#000000" d="M90,35.7L89.3,36l-0.3-0.7c-0.3-0.9,0.1-1.9,0.9-2.3l0.7-0.3l0.3,0.7C91.3,34.4,90.9,35.4,90,35.7z"></path>
+            <path fill="#000000" d="M85.3,37.4l0.7-0.2l-0.2-0.6c-0.3-0.8-1.3-1.2-2.1-0.8L82.9,36l0.2,0.6C83.5,37.4,84.4,37.7,85.3,37.4z"></path>
+
+          </g>
+        </svg>
+      </div>
+      <div id="result">
+
+      </div>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+    /**
+ * [js-md5]{@link https://github.com/emn178/js-md5}
+ *
+ * @namespace md5
+ * @version 0.7.3
+ * @author Chen, Yi-Cyuan [emn178@gmail.com]
+ * @copyright Chen, Yi-Cyuan 2014-2017
+ * @license MIT
+ */
+!function(){"use strict";function t(t){if(t)d[0]=d[16]=d[1]=d[2]=d[3]=d[4]=d[5]=d[6]=d[7]=d[8]=d[9]=d[10]=d[11]=d[12]=d[13]=d[14]=d[15]=0,this.blocks=d,this.buffer8=l;else if(a){var r=new ArrayBuffer(68);this.buffer8=new Uint8Array(r),this.blocks=new Uint32Array(r)}else this.blocks=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];this.h0=this.h1=this.h2=this.h3=this.start=this.bytes=this.hBytes=0,this.finalized=this.hashed=!1,this.first=!0}var r="input is invalid type",e="object"==typeof window,i=e?window:{};i.JS_MD5_NO_WINDOW&&(e=!1);var s=!e&&"object"==typeof self,h=!i.JS_MD5_NO_NODE_JS&&"object"==typeof process&&process.versions&&process.versions.node;h?i=global:s&&(i=self);var f=!i.JS_MD5_NO_COMMON_JS&&"object"==typeof module&&module.exports,o="function"==typeof define&&define.amd,a=!i.JS_MD5_NO_ARRAY_BUFFER&&"undefined"!=typeof ArrayBuffer,n="0123456789abcdef".split(""),u=[128,32768,8388608,-2147483648],y=[0,8,16,24],c=["hex","array","digest","buffer","arrayBuffer","base64"],p="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/".split(""),d=[],l;if(a){var A=new ArrayBuffer(68);l=new Uint8Array(A),d=new Uint32Array(A)}!i.JS_MD5_NO_NODE_JS&&Array.isArray||(Array.isArray=function(t){return"[object Array]"===Object.prototype.toString.call(t)}),!a||!i.JS_MD5_NO_ARRAY_BUFFER_IS_VIEW&&ArrayBuffer.isView||(ArrayBuffer.isView=function(t){return"object"==typeof t&&t.buffer&&t.buffer.constructor===ArrayBuffer});var b=function(r){return function(e){return new t(!0).update(e)[r]()}},v=function(){var r=b("hex");h&&(r=w(r)),r.create=function(){return new t},r.update=function(t){return r.create().update(t)};for(var e=0;e<c.length;++e){var i=c[e];r[i]=b(i)}return r},w=function(t){var e=eval("require('crypto')"),i=eval("require('buffer').Buffer"),s=function(s){if("string"==typeof s)return e.createHash("md5").update(s,"utf8").digest("hex");if(null===s||void 0===s)throw r;return s.constructor===ArrayBuffer&&(s=new Uint8Array(s)),Array.isArray(s)||ArrayBuffer.isView(s)||s.constructor===i?e.createHash("md5").update(new i(s)).digest("hex"):t(s)};return s};t.prototype.update=function(t){if(!this.finalized){var e,i=typeof t;if("string"!==i){if("object"!==i)throw r;if(null===t)throw r;if(a&&t.constructor===ArrayBuffer)t=new Uint8Array(t);else if(!(Array.isArray(t)||a&&ArrayBuffer.isView(t)))throw r;e=!0}for(var s,h,f=0,o=t.length,n=this.blocks,u=this.buffer8;f<o;){if(this.hashed&&(this.hashed=!1,n[0]=n[16],n[16]=n[1]=n[2]=n[3]=n[4]=n[5]=n[6]=n[7]=n[8]=n[9]=n[10]=n[11]=n[12]=n[13]=n[14]=n[15]=0),e)if(a)for(h=this.start;f<o&&h<64;++f)u[h++]=t[f];else for(h=this.start;f<o&&h<64;++f)n[h>>2]|=t[f]<<y[3&h++];else if(a)for(h=this.start;f<o&&h<64;++f)(s=t.charCodeAt(f))<128?u[h++]=s:s<2048?(u[h++]=192|s>>6,u[h++]=128|63&s):s<55296||s>=57344?(u[h++]=224|s>>12,u[h++]=128|s>>6&63,u[h++]=128|63&s):(s=65536+((1023&s)<<10|1023&t.charCodeAt(++f)),u[h++]=240|s>>18,u[h++]=128|s>>12&63,u[h++]=128|s>>6&63,u[h++]=128|63&s);else for(h=this.start;f<o&&h<64;++f)(s=t.charCodeAt(f))<128?n[h>>2]|=s<<y[3&h++]:s<2048?(n[h>>2]|=(192|s>>6)<<y[3&h++],n[h>>2]|=(128|63&s)<<y[3&h++]):s<55296||s>=57344?(n[h>>2]|=(224|s>>12)<<y[3&h++],n[h>>2]|=(128|s>>6&63)<<y[3&h++],n[h>>2]|=(128|63&s)<<y[3&h++]):(s=65536+((1023&s)<<10|1023&t.charCodeAt(++f)),n[h>>2]|=(240|s>>18)<<y[3&h++],n[h>>2]|=(128|s>>12&63)<<y[3&h++],n[h>>2]|=(128|s>>6&63)<<y[3&h++],n[h>>2]|=(128|63&s)<<y[3&h++]);this.lastByteIndex=h,this.bytes+=h-this.start,h>=64?(this.start=h-64,this.hash(),this.hashed=!0):this.start=h}return this.bytes>4294967295&&(this.hBytes+=this.bytes/4294967296<<0,this.bytes=this.bytes%4294967296),this}},t.prototype.finalize=function(){if(!this.finalized){this.finalized=!0;var t=this.blocks,r=this.lastByteIndex;t[r>>2]|=u[3&r],r>=56&&(this.hashed||this.hash(),t[0]=t[16],t[16]=t[1]=t[2]=t[3]=t[4]=t[5]=t[6]=t[7]=t[8]=t[9]=t[10]=t[11]=t[12]=t[13]=t[14]=t[15]=0),t[14]=this.bytes<<3,t[15]=this.hBytes<<3|this.bytes>>>29,this.hash()}},t.prototype.hash=function(){var t,r,e,i,s,h,f=this.blocks;this.first?r=((r=((t=((t=f[0]-680876937)<<7|t>>>25)-271733879<<0)^(e=((e=(-271733879^(i=((i=(-1732584194^2004318071&t)+f[1]-117830708)<<12|i>>>20)+t<<0)&(-271733879^t))+f[2]-1126478375)<<17|e>>>15)+i<<0)&(i^t))+f[3]-1316259209)<<22|r>>>10)+e<<0:(t=this.h0,r=this.h1,e=this.h2,r=((r+=((t=((t+=((i=this.h3)^r&(e^i))+f[0]-680876936)<<7|t>>>25)+r<<0)^(e=((e+=(r^(i=((i+=(e^t&(r^e))+f[1]-389564586)<<12|i>>>20)+t<<0)&(t^r))+f[2]+606105819)<<17|e>>>15)+i<<0)&(i^t))+f[3]-1044525330)<<22|r>>>10)+e<<0),r=((r+=((t=((t+=(i^r&(e^i))+f[4]-176418897)<<7|t>>>25)+r<<0)^(e=((e+=(r^(i=((i+=(e^t&(r^e))+f[5]+1200080426)<<12|i>>>20)+t<<0)&(t^r))+f[6]-1473231341)<<17|e>>>15)+i<<0)&(i^t))+f[7]-45705983)<<22|r>>>10)+e<<0,r=((r+=((t=((t+=(i^r&(e^i))+f[8]+1770035416)<<7|t>>>25)+r<<0)^(e=((e+=(r^(i=((i+=(e^t&(r^e))+f[9]-1958414417)<<12|i>>>20)+t<<0)&(t^r))+f[10]-42063)<<17|e>>>15)+i<<0)&(i^t))+f[11]-1990404162)<<22|r>>>10)+e<<0,r=((r+=((t=((t+=(i^r&(e^i))+f[12]+1804603682)<<7|t>>>25)+r<<0)^(e=((e+=(r^(i=((i+=(e^t&(r^e))+f[13]-40341101)<<12|i>>>20)+t<<0)&(t^r))+f[14]-1502002290)<<17|e>>>15)+i<<0)&(i^t))+f[15]+1236535329)<<22|r>>>10)+e<<0,r=((r+=((i=((i+=(r^e&((t=((t+=(e^i&(r^e))+f[1]-165796510)<<5|t>>>27)+r<<0)^r))+f[6]-1069501632)<<9|i>>>23)+t<<0)^t&((e=((e+=(t^r&(i^t))+f[11]+643717713)<<14|e>>>18)+i<<0)^i))+f[0]-373897302)<<20|r>>>12)+e<<0,r=((r+=((i=((i+=(r^e&((t=((t+=(e^i&(r^e))+f[5]-701558691)<<5|t>>>27)+r<<0)^r))+f[10]+38016083)<<9|i>>>23)+t<<0)^t&((e=((e+=(t^r&(i^t))+f[15]-660478335)<<14|e>>>18)+i<<0)^i))+f[4]-405537848)<<20|r>>>12)+e<<0,r=((r+=((i=((i+=(r^e&((t=((t+=(e^i&(r^e))+f[9]+568446438)<<5|t>>>27)+r<<0)^r))+f[14]-1019803690)<<9|i>>>23)+t<<0)^t&((e=((e+=(t^r&(i^t))+f[3]-187363961)<<14|e>>>18)+i<<0)^i))+f[8]+1163531501)<<20|r>>>12)+e<<0,r=((r+=((i=((i+=(r^e&((t=((t+=(e^i&(r^e))+f[13]-1444681467)<<5|t>>>27)+r<<0)^r))+f[2]-51403784)<<9|i>>>23)+t<<0)^t&((e=((e+=(t^r&(i^t))+f[7]+1735328473)<<14|e>>>18)+i<<0)^i))+f[12]-1926607734)<<20|r>>>12)+e<<0,r=((r+=((h=(i=((i+=((s=r^e)^(t=((t+=(s^i)+f[5]-378558)<<4|t>>>28)+r<<0))+f[8]-2022574463)<<11|i>>>21)+t<<0)^t)^(e=((e+=(h^r)+f[11]+1839030562)<<16|e>>>16)+i<<0))+f[14]-35309556)<<23|r>>>9)+e<<0,r=((r+=((h=(i=((i+=((s=r^e)^(t=((t+=(s^i)+f[1]-1530992060)<<4|t>>>28)+r<<0))+f[4]+1272893353)<<11|i>>>21)+t<<0)^t)^(e=((e+=(h^r)+f[7]-155497632)<<16|e>>>16)+i<<0))+f[10]-1094730640)<<23|r>>>9)+e<<0,r=((r+=((h=(i=((i+=((s=r^e)^(t=((t+=(s^i)+f[13]+681279174)<<4|t>>>28)+r<<0))+f[0]-358537222)<<11|i>>>21)+t<<0)^t)^(e=((e+=(h^r)+f[3]-722521979)<<16|e>>>16)+i<<0))+f[6]+76029189)<<23|r>>>9)+e<<0,r=((r+=((h=(i=((i+=((s=r^e)^(t=((t+=(s^i)+f[9]-640364487)<<4|t>>>28)+r<<0))+f[12]-421815835)<<11|i>>>21)+t<<0)^t)^(e=((e+=(h^r)+f[15]+530742520)<<16|e>>>16)+i<<0))+f[2]-995338651)<<23|r>>>9)+e<<0,r=((r+=((i=((i+=(r^((t=((t+=(e^(r|~i))+f[0]-198630844)<<6|t>>>26)+r<<0)|~e))+f[7]+1126891415)<<10|i>>>22)+t<<0)^((e=((e+=(t^(i|~r))+f[14]-1416354905)<<15|e>>>17)+i<<0)|~t))+f[5]-57434055)<<21|r>>>11)+e<<0,r=((r+=((i=((i+=(r^((t=((t+=(e^(r|~i))+f[12]+1700485571)<<6|t>>>26)+r<<0)|~e))+f[3]-1894986606)<<10|i>>>22)+t<<0)^((e=((e+=(t^(i|~r))+f[10]-1051523)<<15|e>>>17)+i<<0)|~t))+f[1]-2054922799)<<21|r>>>11)+e<<0,r=((r+=((i=((i+=(r^((t=((t+=(e^(r|~i))+f[8]+1873313359)<<6|t>>>26)+r<<0)|~e))+f[15]-30611744)<<10|i>>>22)+t<<0)^((e=((e+=(t^(i|~r))+f[6]-1560198380)<<15|e>>>17)+i<<0)|~t))+f[13]+1309151649)<<21|r>>>11)+e<<0,r=((r+=((i=((i+=(r^((t=((t+=(e^(r|~i))+f[4]-145523070)<<6|t>>>26)+r<<0)|~e))+f[11]-1120210379)<<10|i>>>22)+t<<0)^((e=((e+=(t^(i|~r))+f[2]+718787259)<<15|e>>>17)+i<<0)|~t))+f[9]-343485551)<<21|r>>>11)+e<<0,this.first?(this.h0=t+1732584193<<0,this.h1=r-271733879<<0,this.h2=e-1732584194<<0,this.h3=i+271733878<<0,this.first=!1):(this.h0=this.h0+t<<0,this.h1=this.h1+r<<0,this.h2=this.h2+e<<0,this.h3=this.h3+i<<0)},t.prototype.hex=function(){this.finalize();var t=this.h0,r=this.h1,e=this.h2,i=this.h3;return n[t>>4&15]+n[15&t]+n[t>>12&15]+n[t>>8&15]+n[t>>20&15]+n[t>>16&15]+n[t>>28&15]+n[t>>24&15]+n[r>>4&15]+n[15&r]+n[r>>12&15]+n[r>>8&15]+n[r>>20&15]+n[r>>16&15]+n[r>>28&15]+n[r>>24&15]+n[e>>4&15]+n[15&e]+n[e>>12&15]+n[e>>8&15]+n[e>>20&15]+n[e>>16&15]+n[e>>28&15]+n[e>>24&15]+n[i>>4&15]+n[15&i]+n[i>>12&15]+n[i>>8&15]+n[i>>20&15]+n[i>>16&15]+n[i>>28&15]+n[i>>24&15]},t.prototype.toString=t.prototype.hex,t.prototype.digest=function(){this.finalize();var t=this.h0,r=this.h1,e=this.h2,i=this.h3;return[255&t,t>>8&255,t>>16&255,t>>24&255,255&r,r>>8&255,r>>16&255,r>>24&255,255&e,e>>8&255,e>>16&255,e>>24&255,255&i,i>>8&255,i>>16&255,i>>24&255]},t.prototype.array=t.prototype.digest,t.prototype.arrayBuffer=function(){this.finalize();var t=new ArrayBuffer(16),r=new Uint32Array(t);return r[0]=this.h0,r[1]=this.h1,r[2]=this.h2,r[3]=this.h3,t},t.prototype.buffer=t.prototype.arrayBuffer,t.prototype.base64=function(){for(var t,r,e,i="",s=this.array(),h=0;h<15;)t=s[h++],r=s[h++],e=s[h++],i+=p[t>>>2]+p[63&(t<<4|r>>>4)]+p[63&(r<<2|e>>>6)]+p[63&e];return t=s[h],i+=p[t>>>2]+p[t<<4&63]+"=="};var _=v();f?module.exports=_:(i.md5=_,o&&define(function(){return _}))}();
+  </script>
+  <script type="text/javascript">
+    var base64Image = "";
+
+    function readURL(input) {
+      if (input.files && input.files[0]) {
+         var reader = new FileReader();
+
+         reader.onload = function(e) {
+          console.log(e.target.result)
+            base64Image = e.target.result.split(",")[1];
+            document.getElementById("previewImage").setAttribute("src", e.target.result);
+         }
+
+         reader.readAsDataURL(input.files[0]);
+
+      }
+    }
+
+    document.getElementById("selectImage").addEventListener("change",function() {
+      readURL(this);
+    });
+
+    function objKeySort(obj) {
+        var newkey = Object.keys(obj).sort();
+        var newObj = {};
+        for (var i = 0; i < newkey.length; i++) {
+            newObj[newkey[i]] = obj[newkey[i]];
+        }
+        console.log(newObj);
+        return newObj;
+    }
+
+    function sign(params) {
+      var api_key = document.getElementById("api_key").value;
+      var sortParmas = objKeySort(params);
+      var serParmas = [];
+      for(var p in sortParmas){
+        serParmas.push(`${p}=${sortParmas[p]}`)
+      }
+      var result = serParmas.join("&") + `&api_key=${api_key}`;
+      console.log(result);
+      return md5(result).toUpperCase();
+
+
+    }
+
+    function recognition(){
+      var params = {
+        "api_id": document.getElementById("api_id").value,
+        "timestamp": parseInt(new Date().getTime() / 1000),
+        "image": base64Image,
+        // "sign": "123"
+      }
+      console.log(params)
+      params.sign = sign(params);
+      return params;
+    }
+
+    document.getElementById("viewResult").addEventListener("click",function() {
+      document.getElementById("result").innerHTML = "";
+      document.getElementById("loading").style.display = "block";
+      var params = recognition();
+      console.log(params)
+      fetch(document.getElementById("URL").value, {
+        body: JSON.stringify(params), // must match 'Content-Type' header
+        headers: {
+          'content-type': 'application/json'
+        },
+        method: 'POST', // *GET, POST, PUT, DELETE, etc.
+      })
+      .then(response => response.json())
+      .then(res => {
+        document.getElementById("loading").style.display = "none";
+        var html = "";
+        var data = res.data;
+        if(res.msg == ""){
+          for(var p in data){
+            if(p == 'face'){
+               html += `<p><span class="key">${p}:</span><img src="data:image/jpg;base64,${data[p]}"></p>`;
+            }else{
+              html += `<p><span class="key">${p}:</span>${data[p].toString().replace(/</g,"&lt;")}</p>`
+            }
+          }
+        }else{
+          html = res.msg;
+        }
+
+        document.getElementById("result").innerHTML = html;
+      })
+      .catch(err => {
+        document.getElementById("loading").style.display = "none";
+        document.getElementById("result").innerHTML = "error URL: " + JSON.stringify(err);
+      })
+
+    });
+  </script>
+
+
+
+</body>
+</html>

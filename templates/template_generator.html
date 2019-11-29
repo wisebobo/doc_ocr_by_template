@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Document Template Generator</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<style>
+  img{
+    max-width: 100%
+  }
+  body{
+    position: absolute;
+    height: 100%;
+    margin: 0;
+    width: 100%;
+  }
+  .main{
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background-color: #f1f1f1;
+    display: flex;
+  }
+  .right{
+    flex: 1;
+    padding: 10px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: left;
+    height: 100%;
+    overflow: auto;
+  }
+  .allAreaInfo_wrap{
+    width: 350px;
+    overflow: auto;
+    background-color: #f8f8f8;
+    margin: 0px 0 0px 0px;
+    /*padding: 15px 10px;*/
+  }
+  .allAreaInfo_wrap >div>div{
+    width: 260px;
+    background-color: #fff;
+    margin: 0 auto 20px auto;
+    font-size: 13px;
+    padding: 10px;
+    border: 2px solid #fff;
+    text-align: right;
+    border-radius: 4px;
+  }
+  .allAreaInfo_wrap p{
+    margin: 0 0 6px 0;
+    text-align: left;
+    position: relative;
+  }
+  .allAreaInfo_wrap .active{
+    border: 2px solid #A05EB5;
+  }
+  .areaInfo{
+    border-top: 1px solid #ccc;
+    border-bottom: 1px solid #ccc;
+    margin: 30px 0;
+  }
+  .areaInfo p{
+    font-size: 14px;
+  }
+  .areaInfo input[type="text"]{
+    width: 300px;
+  }
+  .wrap{
+    position: relative;
+    margin-bottom: 20px;
+  }
+  .wrap img{
+    vertical-align: top;
+    height: 600px;
+  }
+  .range{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    /*background: red;*/
+  }
+  .range .block{
+    position: absolute;
+    top:0;
+    left: 0;
+    width: 0;
+    height: 0;
+    background-color: rgba(135,206,255,.7);
+  }
+  .block.active{
+    background-color: rgba(255,192,203,.7);
+  }
+  .block:hover{
+    cursor: pointer;
+  }
+  .size{
+    position: absolute;
+    bottom: 0;
+    right:0;
+    width: 20px;
+    height: 20px;
+  }
+  .size:hover{
+    cursor: se-resize;
+  }
+
+  .result{
+    position: relative;
+    width: 400px;
+
+  }
+  .result_range{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+  .result_block{
+    position: absolute;
+    background-color: rgba(255,140,0,.5);
+  }
+  .tab_header{
+    position: fixed;
+    width: 350px;
+    display: flex;
+    background-color: #fff;
+    z-index: 9;
+  }
+  .tab_header span{
+    flex: 1;
+    padding: 20px 0;
+    text-align: center;
+    border-bottom: 2px solid #fff;
+    cursor: pointer;
+  }
+  .tab_header span.show{
+    border-bottom: 2px solid #3DA7B0;
+    color: #3DA7B0;
+  }
+  .tab{
+    padding-top: 80px;
+    overflow: auto;
+  }
+  .addBtn_wrap{
+    padding: 10px 0;
+  }
+  .addBtn_wrap .btn{
+    position: relative;
+    padding: 0 10px;
+    height: 30px;
+    line-height: 30px;
+    border: 1px solid #16C4AF;
+    display: inline-block;
+    font-size: 14px;
+    margin-right: 15px;
+    border-radius: 4px;
+    text-align: center;
+    cursor: pointer;
+  }
+  .addBtn_wrap input[type="file"]{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    z-index: 2;
+    cursor: pointer;
+  }
+  .addBtn_wrap .btn img{
+    width: 30px;
+    float: left;
+    margin-right: 5px;
+  }
+  #viewResult img{
+    width: 22px;
+    position: relative;
+    top: 4px;
+  }
+  #addRangeBlock img{
+    width: 20px;
+    position: relative;
+    top: 5px;
+  }
+  .resultString{
+    padding: 10px 0 30px 0;
+    text-align: left;
+    font-size: 13px;
+  }
+  #setData-wrap img{
+    float: right;
+    margin-left: 10px;
+    width: 20px;
+    position: relative;
+    top: 5px;
+  }
+</style>
+<body>
+  <div class="main">
+    <div class="right">
+        <div class="addBtn_wrap">
+            <div class="btn">
+                <img src="data:image/png;base64,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"/>
+                <span>Select Picture</span>
+                <input id="selectImage" type="file" name="selectImage" />
+            </div>
+            <div class="btn" id="addRangeBlock" style="display: none;">
+                <img src="data:image/png;base64,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"/>
+                <span>Add Area</span>
+            </div>
+             <div class="btn" id="setData-wrap" style="display: none;">
+                <input id="setDataValue" type="text" name="" placeholder="Input json data">
+                <img id="setData" src="data:image/png;base64,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"/>
+            </div>
+            <div class="btn" id="viewResult">
+                <img src="data:image/png;base64,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"/>
+                <span>View Result</span>
+            </div>
+            <!-- <input id="selectImage" type="file" name="selectImage" />
+            <button id="addRangeBlock">添加框</button>
+            <button id="viewResult">view result</button> -->
+        </div>
+        <div class="wrap">
+            <img id="previewImage" src="">
+            <div id="range" class="range">
+            </div>
+        </div>
+        <div id="resultString" class="resultString">
+
+        </div>
+    </div>
+
+     <div class="allAreaInfo_wrap">
+        <div class="tab_header">
+            <span id="referenceArea_header" class="show">referenceArea</span>
+            <span id="recognitionArea_header">RecognitionArea</span>
+        </div>
+         <div id="allAreaInfo_referenceArea" class="tab">
+
+        </div>
+        <div id="allAreaInfo_recognitionArea" class="tab" style="display: none;">
+
+        </div>
+    </div>
+  </div>
+
+  <div style="display: none;">
+
+    <button id="viewResult">view result</button>
+    <div class="result">
+         <img src="img.png">
+         <div id="result_range" class="result_range">
+
+         </div>
+    </div>
+  </div>
+
+
+  <script type="text/javascript">
+
+  let areaList = []; // 记录全部区域的信息
+
+  let defaultInfo = { // 每一个区域的信息
+      x: 0,
+      y: 0,
+      w: 0,
+      h: 0,
+      rootElemW: 0,
+      keyword: '',
+      areaType: "", // recognitionArea, referenceArea
+      id: -1,
+    }
+  let activeAreaId = null;  // 被选中的当前区域的ID
+  let currentAreaType = "referenceArea";
+
+  // 观察者模式
+  function EventListen(){
+    this.handlers = {}; // 每一个实例都有自己的集合
+  }
+
+  EventListen.prototype = {
+    constructor: EventListen,
+    addHandler: function(type, handler){  // 订阅
+      if(typeof this.handlers[type] == 'undefined'){
+        this.handlers[type] = []; // {[type]: []}
+      }
+      this.handlers[type].push(handler)
+    },
+
+    trigger: function(event){ // 发布
+      if(this.handlers[event.type] instanceof Array){
+        let handlers = this.handlers[event.type];
+        handlers.forEach(fn => {
+          fn(event)
+        })
+      }
+    },
+
+    removeHandler: function(type, handler){ // 取消订阅
+      if(this.handlers[type] instanceof Array){
+        let handlers = this.handlers[type];
+        for(var i=0, len = handlers.length; i < len; i++){
+          if(handlers[i] === handler){
+              break;
+          }
+        }
+        handlers.splice(i,1)
+       // this.handlers[type] = handlers.filter(fn => fn !=== handler)
+      }
+    }
+  }
+
+
+  // 专门处理拖拽缩放, 需要优化成构造函数
+  let DragDrop = function(ListenElement){
+      this.eventListener = new EventListen();  // 创建观察者
+      this.ListenElement = ListenElement;
+      this.dragging = null;   // 当前被拖拽或者缩放的target元素
+      this.diffX = 0;         // 计算元素左上角和指针位置之间的X差值
+      this.diffY = 0;         // 计算元素左上角和指针位置之间的Y差值
+      this.originalW = 0;     // 计算元素的原始宽度
+      this.originalH = 0;     // 计算元素的原始高度
+      this.isDrage = false;   // 是否正被拖动
+      this.isAdjust = false;  // 是否正被缩放
+      this.rootElemW = 0;     // 元素的外层元素的宽度（用于计算最大宽度和最大高度）
+      this.rootElemH = 0;     // 元素的外层元素的高度（用于计算最大宽度和最大高度）
+      this.adjustElemW = 0;   // 缩放按钮的宽度（用于计算缩放按钮左上角和指针位置之间的X差值）
+      this.adjustElemH = 0;   // 缩放按钮的高度（用于计算缩放按钮左上角和指针位置之间的差值）
+      this.listen();
+  }
+
+  DragDrop.prototype = {
+    constructor: DragDrop,
+    listen: function(){  // 创建事件，监听鼠标事件
+
+      // 使用事件委托，优化
+      this.ListenElement.addEventListener('mousedown', this.handleEvent.bind(this));
+      this.ListenElement.addEventListener('mousemove', this.handleEvent.bind(this));
+      this.ListenElement.addEventListener('mouseup', this.handleEvent.bind(this));
+    },
+    handleEvent: function(event){ // 处理鼠标事件
+        let target = event.target;  // 当前鼠标指针的目标
+        let rootElem = null;        // 目标元素的外层元素
+
+        let _this = this;
+
+        switch(event.type){   // 判断事件类型
+          case 'mousedown':   // 按下鼠标
+            if(target.getAttribute("id") == "range"){
+              let position = target.getBoundingClientRect();
+              target = createArea(event.clientX-position.left, event.clientY-position.top);
+            }
+            _this.isDrage = target.className.indexOf('draggable') > -1;  // 判断元素是否可拖拽
+            _this.isAdjust = target.className.indexOf('size') > -1;      // 判断元素是否缩放按钮
+
+            // /* dragging： 是上一次操作的元素， 如果存在该元素，那么先要去掉该元素的‘active’状态，再清空该元素
+            //   如果在‘mouseup’事情做的话，鼠标一松，‘active状态就会没有，不符合要求
+            //   所以只能在 下一次拖动或者缩放 再清除上一次操作元素的信息’ */
+            // if(_this.dragging && (_this.isDrage || _this.isAdjust)){
+            //   _this.eventListener.trigger({
+            //     type: 'clean',
+            //     target: _this.dragging
+            //   })
+            //   _this.dragging = null;
+            // }
+
+            if(_this.isAdjust){ // 如果当前元素是缩放按钮，那么target是缩放按钮，那么可以计算缩放按钮的宽度和高度
+              _this.adjustElemW = target.offsetWidth;
+              _this.adjustElemH = target.offsetHeight;
+            }
+
+            if(_this.isDrage || _this.isAdjust){ // 如果当前元素是可拖拽元素或者缩放按钮，那么就可执行下面的代码
+              _this.dragging = _this.isDrage ? target : target.parentNode; // 如果是可拖动元素，那么target就是‘区域’，如果是缩放按钮，那么就要取其父元素，即‘区域’
+
+              _this.diffX = event.clientX - _this.dragging.offsetLeft; //计算dragging元素‘区域’左上角和指针位置之间的X差值，防止‘区域div跳动'(缩放时宽高计算方案1：用dragging.offsetLeft计算diff)
+              _this.diffY = event.clientY - _this.dragging.offsetTop;  //计算dragging元素‘区域’左上角和指针位置之间的Y差值，防止‘区域div跳动'(缩放时宽高计算方案1：用dragging.offsetTop计算diff)
+              //diffX = event.clientX - target.offsetLeft; //计算target元素左上角和指针位置之间的X差值，防止‘区域div跳动',(缩放时宽高计算方案2：用target.offsetLeft计算diff,即是 缩放按钮的最新坐标 = 区域的最新宽高)
+              //diffY = event.clientY - target.offsetTop;  //计算target元素左上角和指针位置之间的Y差值，防止‘区域div跳动'，(缩放时宽高计算方案2：用target.offsetTop计算diff,即是 缩放按钮的最新坐标 = 区域的最新宽高)
+
+           //   console.log('1111: ', event.clientX, _this.dragging.offsetLeft);
+
+              _this.originalW = _this.dragging.offsetWidth;  // 记录当前元素的宽度
+              _this.originalH = _this.dragging.offsetHeight; // 记录当前元素的高度
+
+              rootElem = _this.dragging.parentNode;    // 当前‘区域’的父元素，即‘有效范围’
+              _this.rootElemW = rootElem.offsetWidth;  // 有效范围的宽度
+              _this.rootElemH = rootElem.offsetHeight; // 有效范围的高度
+
+              _this.eventListener.trigger({ // 发布 ‘mousedown’
+                type: 'mousedown',
+                target: _this.dragging,
+                x: event.clientX,
+                y: event.clientY,
+                w: _this.originalW,
+                h: _this.originalH,
+                rootElemW:  _this.rootElemW
+              })
+           //   console.log(_this.dragging)
+            }
+            break;
+
+          case 'mousemove':
+            // 如果存在 ‘区域’ 元素，则可执行下面的代码
+            if(_this.dragging !== null){
+              let x = (event.clientX - _this.diffX);  // 计算'区域' X坐标： 鼠标位置X - 元素左上角和指针位置之间的X差值
+              let y = (event.clientY - _this.diffY);  // 计算'区域' Y坐标： 鼠标位置Y - 元素左上角和指针位置之间的Y差值
+             // console.log('2222: ',event.clientX, _this.diffX)
+
+              let w = x - _this.dragging.offsetLeft + _this.originalW;
+              let h = y - _this.dragging.offsetTop + _this.originalH;
+              /*
+                (缩放时宽高计算方案1：用dragging.offsetLeft||offsetTop计算diff)
+                计算‘区域’的新宽度： 计算‘区域’的新坐标
+                鼠标位置X - 差值X = 按钮的新坐标X，即是计算‘区域’的新坐标
+                新坐标 - 区域的offsetLeft + 原宽高 = 新宽高
+              */
+
+              /*
+               let w = x + adjustElemW;
+               let h = y + adjustElemH;
+               (缩放时宽高计算方案2：用target.offsetLeft||offsetTop计算diff,即是 缩放按钮的最新坐标 = 区域的最新宽高)
+               计算‘区域’的新宽度，其实就等于计算‘缩放按钮’的新x坐标，注意 diffX 是缩放按钮的与鼠标的差值哦
+               鼠标位置X - 差值X = 按钮的新坐标X，即是新宽度
+               新宽度出来的效果会和鼠标相差一个缩放按钮的位置，所以加回一个按钮的宽即可*/
+
+              // 判断可拖动至某个范围
+              if(_this.isDrage){
+
+                  if((x + _this.originalW) > _this.rootElemW){ // 如果x坐标超出‘外框’的最右边，那么x = 外框的宽度 - 区域的宽度
+                    x = _this.rootElemW - _this.originalW;
+                  }
+                  if(x < 0){ // 如果x坐标超出外框的最左边，即为负值，那么 x = 0
+                    x = 0;
+                  }
+                  if((y+ _this.originalH) > _this.rootElemH){ // 如果y坐标超出‘外框’的最下边，那么y = 外框的高度 - 区域的高度
+                    y = _this.rootElemH - _this.originalH;
+                  }
+                  if(y < 0){ // 如果y坐标超出外框的最上边，即为负值，那么 y = 0
+                    y = 0;
+                  }
+
+                  _this.dragging.style.left = x + 'px';  // 将区域移至新坐标
+                  _this.dragging.style.top = y + 'px';   // 将区域移至新坐标
+              }
+
+              // 判断可缩放到某个范围
+              if(_this.isAdjust){
+
+                  if((w + _this.dragging.offsetLeft) > _this.rootElemW){ // 区域的宽度 + 区域距离外框的最左边的距离 不能大于 外框的宽度
+                     //区域的宽度最大只能是 外框的宽度 - 区域距离外框的最左边的距离
+                     w = _this.rootElemW - _this.dragging.offsetLeft;
+                  }
+
+                  if((h + _this.dragging.offsetTop) > _this.rootElemH){ // 区域的高度 + 区域距离外框的最顶边的距离 不能大于 外框的高度
+                    //区域的高度最大只能是 外框的高度 - 区域距离外框的最顶边的距离
+                    h = _this.rootElemH - _this.dragging.offsetTop;
+                  }
+
+                  // 如果需要限制 ‘区域’ 的最小宽高，可在此加上判断
+
+                 _this.dragging.style.width = w + 'px'; // 更新区域的宽
+                 _this.dragging.style.height = h + 'px'; // 更新区域的高
+              }
+
+              _this.eventListener.trigger({ // 发布 'mousemove'
+                type: 'mousemove',
+                target: _this.dragging,
+                x: _this.isDrage? x : _this.dragging.offsetLeft, // 如果正被拖动，那么拿最新的x, 否则计算区域的x坐标（因为被缩放时坐标不变）
+                y: _this.isDrage? y : _this.dragging.offsetTop,  // 如果正被拖动，那么拿最新的y, 否则计算区域的y坐标（因为被缩放时坐标不变）
+                w: _this.isAdjust? w : _this.dragging.offsetWidth, // 如果正被缩放，那么拿最新的w, 否则计算区域的宽度（因为被拖动时宽高不变）
+                h: _this.isAdjust? h : _this.dragging.offsetHeight, // 如果正被缩放，那么拿最新的h, 否则计算区域的高度（因为被拖动时宽高不变）
+                rootElemW: _this.rootElemW
+              })
+
+             }
+
+            break;
+
+          case 'mouseup':
+            _this.eventListener.trigger({
+                type: 'mouseup',
+                target: _this.dragging
+            })
+            // 以后要加上 判断with 和 height 是不是等于0， 等于0就删掉这个块
+            _this.dragging = null;
+            _this.isDrage = false;  // 鼠标松开时，取消‘正拖动’的状态
+            _this.isAdjust = false; // 鼠标松开时，取消‘正缩放’的状态
+            break;
+        }
+    },
+
+  }
+
+  function readURL(input) {
+    if (input.files && input.files[0]) {
+       var reader = new FileReader();
+
+       reader.onload = function(e) {
+          document.getElementById("previewImage").setAttribute("src", e.target.result);
+       }
+
+       reader.readAsDataURL(input.files[0]);
+       removeAllData();
+       document.getElementById("setData-wrap").style.display = "inline-block";
+    }
+  }
+
+    document.getElementById("selectImage").addEventListener("change",function() {
+      readURL(this);
+    });
+
+  function switchCurrentAreaType(type){
+    currentAreaType = type;
+    let rangeElem = document.getElementById("range");
+    for(var i=0;i<rangeElem.children.length;i++){
+        if(rangeElem.children[i].getAttribute("type") == currentAreaType){
+            rangeElem.children[i].style.display = "block";
+        }else{
+            rangeElem.children[i].style.display = "none";
+        }
+
+    }
+  }
+
+  function removeRightStyle(){
+    let rangeElem = document.getElementById("range");
+    for(var i=0;i<rangeElem.childNodes.length;i++){
+        rangeElem.childNodes[i].className = "block draggable";
+    }
+  }
+
+  function addActiveStyle(activeAreaId, isUpdateRight){
+    let parentElem1 = document.getElementById("allAreaInfo_recognitionArea");
+    for(var i=0;i<parentElem1.childNodes.length;i++){
+        parentElem1.childNodes[i].className = "";
+    }
+    let parentElem2 = document.getElementById("allAreaInfo_referenceArea");
+    for(var i=0;i<parentElem2.childNodes.length;i++){
+        parentElem2.childNodes[i].className = "";
+    }
+
+    let target = document.getElementById('order_' + activeAreaId);
+    target.className += " active";
+    if(isUpdateRight){
+        removeRightStyle();
+        let area = document.getElementById('area-' + activeAreaId);
+        area.className += " active";
+    }
+  }
+
+
+  // 更新显示当前‘区域’的信息
+  function updateSigleAreaInfo(activeAreaId){
+    let data = null;
+    if(activeAreaId < 0){ // 如果删除了一个区域，那么 activeAreaId = -1
+      data = defaultInfo; // 显示默认信息
+    }else{
+       data = areaList[activeAreaId]; // 如果存在 activeAreaId， 那么显示相应‘区域’的信息
+    }
+
+    // let areaId = document.getElementById('areaId_'+activeAreaId);
+    let areaX = document.getElementById('areaX_'+activeAreaId);
+    let areaY = document.getElementById('areaY_'+activeAreaId);
+    let areaW = document.getElementById('areaW_'+activeAreaId);
+    let areaH = document.getElementById('areaH_'+activeAreaId);
+    let enterKeyword = document.getElementById('enterKeyword_'+activeAreaId);
+
+    enterKeyword.value = data.keyword;
+    // areaId.innerHTML = activeAreaId;
+    areaX.innerHTML = data.x;
+    areaY.innerHTML = data.y;
+    areaW.innerHTML = data.w;
+    areaH.innerHTML = data.h;
+  }
+
+  function removeAreaInfo(activeAreaId) {
+      document.getElementById("allAreaInfo_"+currentAreaType).removeChild(document.getElementById('order_' + activeAreaId));
+  }
+
+  function addArea(order, areaType){
+    let newBlock = document.createElement("div");
+    newBlock.setAttribute("id", "order_"+order);
+
+    // let idElem = document.createElement("p");
+    // idElem.innerHTML = `id: <span id="areaId_${order}">${areaList[order].id}</span>`;
+    // newBlock.appendChild(idElem);
+
+    let nameElem = document.createElement("p");
+    nameElem.innerHTML = areaType === "recognitionArea" ? "Field Name：" : "Keyword: " ;
+    let nameinputElem = document.createElement("input");
+    nameinputElem.setAttribute("type", "text");
+    nameinputElem.setAttribute("value", areaList[order].keyword);
+    nameinputElem.setAttribute("id", "enterKeyword_"+order);
+    nameElem.appendChild(nameinputElem);
+    newBlock.appendChild(nameElem);
+
+    if(areaType === "recognitionArea"){
+        let valueTypeElem = document.createElement("p")
+        valueTypeElem.innerHTML = `Type: <select name="tigong" id="valueType_${order}">
+                    <option value="string">string</option>
+                    <option value="date">date</option>
+                    <option value="numeric">numeric</option>
+                </select> `;
+        newBlock.appendChild(valueTypeElem);
+    }
+
+    let dxElem = document.createElement("p");
+    dxElem.innerHTML = `x: <span id="areaX_${order}">${areaList[order].x}</span>`;
+    newBlock.appendChild(dxElem);
+
+    let dyElem = document.createElement("p");
+    dyElem.innerHTML = `y: <span id="areaY_${order}">${areaList[order].y}</span>`;
+    newBlock.appendChild(dyElem);
+
+    let wElem = document.createElement("p");
+    wElem.innerHTML = `width: <span id="areaW_${order}">${areaList[order].w}</span>`;
+    newBlock.appendChild(wElem);
+
+    let hElem = document.createElement("p");
+    hElem.innerHTML = `height: <span id="areaH_${order}">${areaList[order].h}</span>`;
+    newBlock.appendChild(hElem);
+
+    let deleteElem = document.createElement("button");
+    deleteElem.innerHTML = "Delete";
+    newBlock.appendChild(deleteElem);
+
+    document.getElementById("allAreaInfo_"+areaType).appendChild(newBlock);
+    // 监听输入框，更新‘区域’的keyword
+    listenNameEnter(nameElem, order);
+    listenDelete(deleteElem, order);
+    listenItemClick(newBlock, order);
+    if(areaType === "recognitionArea"){
+         listenValueTypeChange(order, areaList[order].valueType || "string");
+    }
+  }
+
+  function listenValueTypeChange(activeAreaId, defaultValue){
+    document.getElementById("valueType_"+activeAreaId).value = defaultValue;
+    areaList[activeAreaId].valueType = defaultValue;
+    document.getElementById("valueType_"+activeAreaId).addEventListener('change', function(event){
+      areaList[activeAreaId].valueType = event.target.value;
+    })
+  }
+
+  function listenItemClick(elem, activeAreaId){
+    elem.addEventListener('click', function(event){
+      addActiveStyle(activeAreaId, true);
+    })
+  }
+
+  function listenNameEnter(elem, activeAreaId){
+    elem.addEventListener('keyup', function(event){
+      areaList[activeAreaId].keyword = event.target.value;
+    })
+  }
+
+  function listenDelete(elem, activeAreaId){
+    elem.addEventListener('click', function(event){
+      event.stopPropagation();
+      removeAreaInfo(activeAreaId);
+      range.removeChild(document.getElementById('area-' + activeAreaId)); // 先删除‘区域’的节点
+
+      areaList[activeAreaId] = {} // 清空该‘区域’的信息，可以从数组中删除的话，会导致因为序号不同带来的问题，所以还是选择清空而不是删除，到最后筛选没有信息的‘区域’即可
+      activeAreaId = -1;  // 记录 当前‘区域’ 为 -1，就是没有
+    })
+  }
+
+  function removeAllData(){
+    range.innerHTML = "";
+    document.getElementById("allAreaInfo_referenceArea").innerHTML="";
+    document.getElementById("allAreaInfo_recognitionArea").innerHTML="";
+    areaList = [];
+  }
+
+  // 初始化 -- start
+  let range = document.getElementById('range');
+  let addRangeBlock = document.getElementById('addRangeBlock');
+  let deleteBtn = document.getElementById('delete');
+
+  function createArea(x, y){
+      let order = areaList.length;  // 计算‘区域’的数量，方便给新增区域安排序号
+      let block = document.createElement("div"); // ‘区域’ 节点
+      let changeSize = document.createElement("div"); // ‘缩放按钮’ 节点
+      block.setAttribute("type", currentAreaType);
+      changeSize.className = 'size';
+      block.appendChild(changeSize);
+      block.className = 'block draggable';
+      block.id = 'area-' + order;  // 每个 ‘区域’ 都有自己的 Id
+      block.style.top = y+"px";
+      block.style.left = x+"px";
+
+      range.appendChild(block);
+      areaList[order] = {  // 初始化‘区域’的信息
+        x: x,
+        y: y,
+        w: block.offsetWidth,
+        h: block.offsetHeight,
+        rootElemW: range.offsetWidth,
+        keyword: '',
+        id: order,
+        areaType: currentAreaType,
+        valueType: ""
+      }
+      addArea(order, currentAreaType);
+      return changeSize;
+  }
+  // 添加 ‘区域’
+  addRangeBlock.addEventListener('click', function(){
+      createArea(0,0);
+  })
+
+  let referenceArea_header =  document.getElementById("referenceArea_header");
+  let recognitionArea_header = document.getElementById("recognitionArea_header");
+  let allAreaInfo_referenceArea = document.getElementById("allAreaInfo_referenceArea");
+  let allAreaInfo_recognitionArea = document.getElementById("allAreaInfo_recognitionArea")
+
+  referenceArea_header.addEventListener('click', function(){
+    referenceArea_header.className = "show";
+    recognitionArea_header.className= "";
+    allAreaInfo_referenceArea.style.display = "block";
+    allAreaInfo_recognitionArea.style.display = "none";
+    switchCurrentAreaType("referenceArea");
+  })
+
+  recognitionArea_header.addEventListener('click', function(){
+    referenceArea_header.className = "";
+    recognitionArea_header.className= "show";
+    allAreaInfo_referenceArea.style.display = "none";
+    allAreaInfo_recognitionArea.style.display = "block";
+    switchCurrentAreaType("recognitionArea")
+  })
+
+
+  let dragDropObject = new DragDrop(range);
+  //dragDropObject.listen();  // 监听‘外框’的鼠标事件
+
+  dragDropObject.eventListener.addHandler('mousedown', function(e){ // 订阅 鼠标按下‘mousedown’ 事件，当观察者发布‘mosedown’时，就会执行里面的代码
+    let oldActiveAreaId = activeAreaId;
+    activeAreaId = e.target.id.split('-')[1];  // 获取当前‘区域’的序号
+    removeRightStyle();
+    e.target.className = e.target.className + ' active';  // 为当前‘区域’的节点的class加上active
+
+    updateSigleAreaInfo(activeAreaId); // 更新卡片显示
+    addActiveStyle(activeAreaId, false);
+  })
+
+  dragDropObject.eventListener.addHandler('mousemove', function(e){ //订阅 mousemove 事件，当观察者发布‘mousemove’ 时，就会执行里面的代码
+    if(activeAreaId === null || activeAreaId < 0){  // 如果 activeAreaId = -1 时，就是没有 ‘当前区域’ ，那么就不用执行后面的代码
+      return false;
+    }
+    areaList[activeAreaId] = Object.assign({}, areaList[activeAreaId], e); // 更新 当前区域的信息进数组
+
+    updateSigleAreaInfo(activeAreaId); //更新卡片显示
+  })
+
+  // dragDropObject.eventListener.addHandler('clean', function(e){ //订阅 clean 事件，当观察者发布‘clean‘ 时，就会执行里面的代码
+  //    activeAreaId = null; // 当鼠标点击其他‘区域’时，要先清空activeAreaId，并在节点去除 ‘active’
+  //    removeRightStyle();
+  //    e.target.className = 'block draggable';
+  // })
+  dragDropObject.eventListener.addHandler('mouseup', function(e){
+    let areaId = e.target.id.split('-')[1];
+    if(areaList[areaId].w === 0 || areaList[areaId].h ===0){
+        removeAreaInfo(areaId);
+        range.removeChild(document.getElementById('area-' + areaId)); // 先删除‘区域’的节点
+        areaList[areaId] = {} // 清空该‘区域’的信息，可以从数组中删除的话，会导致因为序号不同带来的问题，所以还是选择清空而不是删除，到最后筛选没有信息的‘区域’即可
+        activeAreaId = -1;  // 记录 当前‘区域’ 为 -1，就是没有
+    }
+  })
+
+
+
+  // 创建效果图的‘区域’
+  function createResultBlock(result){
+    let resultRange = document.getElementById('result_range');
+   // console.log(result.rootElemW)
+    let scale = resultRange.offsetWidth / result.rootElemW; // 计算 绘制时和效果图 的比例差值，便于计算每个区域的新坐标和新宽高
+   // console.log(scale)
+    let resultBlock = document.createElement("a"); // a标签，因为要访问指定路径
+    resultBlock.className = 'result_block';
+   // resultBlock.setAttribute('href', result.url);
+    resultBlock.style.left = (result.x * scale) + 'px';
+    resultBlock.style.top = (result.y * scale) + 'px';
+    resultBlock.style.width = (result.w * scale) + 'px';
+    resultBlock.style.height = (result.h * scale) + 'px';
+
+  //  console.log(resultBlock)
+    resultRange.appendChild(resultBlock);
+  }
+
+  let viewResult = document.getElementById('viewResult');
+
+  // 生成效果图
+  viewResult.addEventListener('click', function(){
+    console.log(areaList)
+    //document.getElementById('result_range').innerHTML = ''; // 先清空效果图
+   let result = {
+    referenceArea: [],
+    recognitionArea: []
+   };
+   areaList.forEach(function(item){
+    if(!item.w){
+        return
+    }
+    if(item.areaType === "referenceArea"){
+        result.referenceArea.push({
+          "keyword": item.keyword,
+          "x": item.x,
+          "y": item.y,
+          "width": item.w,
+          "height": item.h
+        })
+    }else{
+        result.recognitionArea.push({
+          "fieldName": item.keyword,
+          "x": item.x,
+          "y": item.y,
+          "width": item.w,
+          "height": item.h,
+          "type": item.valueType
+        })
+    }
+   });
+
+   document.getElementById("resultString").innerHTML = JSON.stringify(result);
+   console.log(JSON.stringify(result))
+    // areaList.forEach(area => { // 通过遍历创建 每个区域
+    //     if(area.w){ // 只创建有信息的区域，排除没有信息的区域
+    //       createResultBlock(area);
+    //     }
+    // })
+  })
+
+
+  function createInitArea(data){
+      let order = areaList.length + data.id;
+      let block = document.createElement("div"); // ‘区域’ 节点
+      let changeSize = document.createElement("div"); // ‘缩放按钮’ 节点
+      block.setAttribute("type", data.areaType);
+      changeSize.className = 'size';
+      block.appendChild(changeSize);
+      block.className = 'block draggable';
+      block.id = 'area-' + order;  // 每个 ‘区域’ 都有自己的 Id
+      block.style.top = data.y+"px";
+      block.style.left = data.x+"px";
+      block.style.width = data.w+"px";
+      block.style.height = data.h+"px";
+      block.style.display = data.areaType == currentAreaType ? "block" : "none";
+
+      range.appendChild(block);
+      areaList[order] = {  // 初始化‘区域’的信息
+        x: data.x,
+        y: data.y,
+        w: data.w,
+        h: data.h,
+        rootElemW: range.offsetWidth,
+        keyword: data.keyword,
+        id: order,
+        areaType: data.areaType,
+        valueType: data.valueType
+      }
+      addArea(order, data.areaType);
+  }
+
+
+  // 输入数据
+  let setData = document.getElementById('setData');
+  setData.addEventListener('click', function(){
+      var inputData = document.getElementById("setDataValue").value;
+      if(!inputData){
+        return;
+      }
+      removeAllData();
+    // var inputData = {"referenceArea":[{"keyword":"1111111","x":122,"y":48,"width":95,"height":30},{"keyword":"2222222","x":93,"y":160,"width":64,"height":14}],"recognitionArea":[{"fieldName":"333","x":235,"y":29,"width":55,"height":32,"type":"date"},{"fieldName":"4444","x":228,"y":119,"width":63,"height":21,"type":"string"}]};
+      var data = JSON.parse(inputData);
+      console.log(data)
+      var finalData = [];
+      var index = 0;
+      finalData = finalData.concat(data.referenceArea.map(function(item){
+        return {
+          x: item.x,
+          y: item.y,
+          w: item.width,
+          h: item.height,
+          valueType: item.type,
+          areaType: "referenceArea",
+          keyword: item.keyword,
+          id: index++
+        }
+      }));
+
+      finalData = finalData.concat(data.recognitionArea.map(function(item){
+        return {
+          x: item.x,
+          y: item.y,
+          w: item.width,
+          h: item.height,
+          valueType: item.type,
+          areaType: "recognitionArea",
+          keyword: item.fieldName,
+          id: index++
+        }
+      }));
+      console.log(finalData)
+
+      finalData.forEach(function(item){
+        createInitArea(item)
+      })
+
+
+   });
+
+
+
+  </script>
+</body>
+</html>
