@@ -49,6 +49,8 @@ or
 python3 startServer.py
 ```
 
+![Image text](https://github.com/wisebobo/doc_ocr_by_template/tree/master/intro/Sample01.png)
+
 ## Design Concept
 1. Running tornado for exposing API service
 2. After receiving base64 image, pass to a pre-trained ResNet50 model for image classification to retrieve the document type.
@@ -57,3 +59,6 @@ python3 startServer.py
 5. Match the 2nd OCR result against the template fields
 6. According to corresponding document type to apply respective data cleasing logic
 7. Calculate the score
+
+## Reference
+1. MRZ https://github.com/konstantint/PassportEye
