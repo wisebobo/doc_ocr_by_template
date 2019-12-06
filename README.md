@@ -49,7 +49,7 @@ or
 python3 startServer.py
 ```
 
-![Image text](https://github.com/wisebobo/doc_ocr_by_template/tree/master/intro/Sample01.png)
+![Image text](https://github.com/wisebobo/doc_ocr_by_template/blob/master/intro/Sample01.png)
 
 ## Design Concept
 1. Running tornado for exposing API service
