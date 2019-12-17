@@ -25,7 +25,7 @@ from util.log import logging_elapsed_time
 graph = tf.compat.v1.get_default_graph()
 # sess = tf.Session(graph=graph)
 
-K.set_image_dim_ordering('tf')
+# K.set_image_dim_ordering('tf')
 
 
 class MODEL(object):
