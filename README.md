@@ -48,6 +48,7 @@ or
 
 python3 startServer.py
 ```
+![Image text](https://github.com/wisebobo/doc_ocr_by_template/blob/master/intro/Sample01.jpg)
 
 ## Design Concept
 1. Running tornado for exposing API service
@@ -57,3 +58,6 @@ python3 startServer.py
 5. Match the 2nd OCR result against the template fields
 6. According to corresponding document type to apply respective data cleasing logic
 7. Calculate the score
+
+## Reference
+1. MRZ https://github.com/konstantint/PassportEye
