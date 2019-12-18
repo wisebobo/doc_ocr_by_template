@@ -290,13 +290,13 @@ class doc_etl(object):
                     self._address = tmpValue
 
                 elif key == 'mrzLine1':
-                    tmpValue = tmpValue.replace('く', '<').replace('≤', '<').upper()
+                    tmpValue = tmpValue.replace('く', '<').replace('≤', '<').replace('工', 'I').replace('エ', 'I').upper()
                     self._mrz_line1 = re.sub('[^0-9A-Z<]', '', tmpValue)
                 elif key == 'mrzLine2':
-                    tmpValue = tmpValue.replace('く', '<').replace('≤', '<').upper()
+                    tmpValue = tmpValue.replace('く', '<').replace('≤', '<').replace('工', 'I').replace('エ', 'I').upper()
                     self._mrz_line2 = re.sub('[^0-9A-Z<]', '', tmpValue)
                 elif key == 'mrzLine3':
-                    tmpValue = tmpValue.replace('く', '<').replace('≤', '<').upper()
+                    tmpValue = tmpValue.replace('く', '<').replace('≤', '<').replace('工', 'I').replace('エ', 'I').upper()
                     self._mrz_line3 = re.sub('[^0-9A-Z<]', '', tmpValue)
 
             # Some other further extraction / validation
@@ -408,7 +408,7 @@ class doc_etl(object):
                 tempString = ocr_string
 
             for item in tempString:
-                item = item.replace(' ', '').replace('く', '<').replace('≤', '<').upper()
+                item = item.replace(' ', '').replace('く', '<').replace('≤', '<').replace('工', 'I').replace('エ', 'I').upper()
 
                 if len(item) > 44:
                     item = item[0:44]

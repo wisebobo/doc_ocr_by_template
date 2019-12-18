@@ -143,7 +143,7 @@ class doc_main(object):
 
                     if len(ocrBoxes):
                         _textConnector = TextConnector()
-                        newOcrBoxes = _textConnector.connect_text(ocrBoxes, self._img.size, MAX_HORIZONTAL_GAP = 400)
+                        newOcrBoxes = _textConnector.connect_text(ocrBoxes, self._img.size, MAX_HORIZONTAL_GAP = 500)
                         newOcrBoxes = sorted(newOcrBoxes, key=itemgetter(1, 0))
 
                         for idx, recogBox in enumerate(newRecogBoxes):
