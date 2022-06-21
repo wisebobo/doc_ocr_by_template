@@ -1,5 +1,5 @@
 opencv_python==4.1.1.26
-numpy==1.17.4
+numpy==1.22.0
 baidu_aip==2.2.18.0
 requests==2.22.0
 Keras==2.2.5
